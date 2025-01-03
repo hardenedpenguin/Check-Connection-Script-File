@@ -40,7 +40,7 @@ sudo crontab -e
 
 Once in the crontab you can enter this line and then next available space in the file:
 ```
-*/2 * * * * /etc/asterisk/local/check_connection.sh > /dev/null
+*/2 * * * * /etc/asterisk/local/check_connection.sh >/dev/null 2>&1
 ```
 
 
