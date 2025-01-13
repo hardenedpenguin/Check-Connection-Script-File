@@ -1,29 +1,28 @@
-#!/bin/bash
+#!/bin/sh
 
-# Check Connection to a designated AllStarLink node and reconnect if disconnected
-# This script file was created by Freddie Mac - KD5FMU your Ham Radio Crusader
-# with the help of ChatGPT. You can look us up at http://www.youtube.com/@hamradiocrusader
+# Check Connection to designated AllStarLink nodes and reconnect if disconnected
+# Author: Freddie Mac - KD5FMU
+# Author: Jory A Pratt - W5GLE
+# Convert script to be posix compliant and handle multiple nodes 1/12/2025
 
-# Set your AllStarLink node number and the target node number you want to check the connection
+# Set your AllStarLink node number
 MY_NODE=XXXXXX
-TARGET_NODE=XXXXXX
 
-# Check if the target node is connected
-if ! /usr/sbin/asterisk -rx "rpt lstats $MY_NODE" | grep -q "$TARGET_NODE"; then
-  echo "Node $MY_NODE is not connected to node $TARGET_NODE. Reconnecting..."
-  /usr/sbin/asterisk -rx "rpt fun $MY_NODE *3$TARGET_NODE"
-else
-   echo "Node $MY_NODE is already connected to node $TARGET_NODE."
- fi
+# Set target nodes as a space-separated list (e.g., "12345 67890")
+TARGET_NODES="XXXXXX XXXXXX"
 
-# comment out all the below if not adding a second section, otherwise fill out MY_NODE and TARGET_NODE
- MY_NODE=XXXXXX
-TARGET_NODE=XXXXXX
+# Function to check and reconnect to a target node
+check_and_reconnect() {
+  TARGET_NODE=$1
+  if ! /usr/sbin/asterisk -rx "rpt lstats $MY_NODE" | grep -q "$TARGET_NODE"; then
+    echo "Node $MY_NODE is not connected to node $TARGET_NODE. Reconnecting..."
+    /usr/sbin/asterisk -rx "rpt fun $MY_NODE *3$TARGET_NODE"
+  else
+    echo "Node $MY_NODE is already connected to node $TARGET_NODE."
+  fi
+}
 
-# Check if the target node is connected
-if ! /usr/sbin/asterisk -rx "rpt lstats $MY_NODE" | grep -q "$TARGET_NODE"; then
-  echo "Node $MY_NODE is not connected to node $TARGET_NODE. Reconnecting..."
-  /usr/sbin/asterisk -rx "rpt fun $MY_NODE *3$TARGET_NODE"
-else
-   echo "Node $MY_NODE is already connected to node $TARGET_NODE."
- fi
+# Iterate through all target nodes
+for TARGET_NODE in $TARGET_NODES; do
+  check_and_reconnect "$TARGET_NODE"
+done
